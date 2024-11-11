@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int path[20];
+int n;
+
+int findMinPath(int k, int v[], int c[][20], int j, int path[]);
+
+void main() {
+    int mcost;
+    path[0] = 1;
+
+    printf("Enter value of N:\n");
+    scanf("%d", &n);
+
+    int c[20][20];
+    int v[20];
+    int j = 1;//current node
+
+    for (int i = 1; i <= n; i++)
+        v[i] = 0;
+        path[n] = 1;
+
+    printf("Enter Array Elements (Adjacency Matrix):\n");
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            scanf("%d", &c[i][j]);
+        }
+    }
+
+    printf("Adjacency Matrix:\n");
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            printf("%d\t", c[i][j]);
+        }
+        printf("\n");
+    }
+
+    v[1] = 1; // Start from the first node
+    mcost = findMinPath(1, v, c, 1, path);
+
+    printf("Minimum cost is %d\n", mcost);
+    printf("Path: ");
+    for (int i = 0; i <= n; i++) {
+        printf("%d-", path[i]);
+    }
+    printf("\n");
+}
+
+int findMinPath(int k, int v[], int c[][20], int j, int path[]) {
+    int min = 999, temp, t;
+    int flag = 0;
+
+    // Base case: if all nodes are visited, return cost to return to start
+    for (int i = 2; i <= n; i++) {
+        if (v[i] == 0) {
+            flag = 1;
+            break;
+        }
+    }
+    if (flag == 0) {
+        path[j] = 1; // Complete the path by returning to the starting node
+        return c[k][1];
+    }
+
+    // Recursive case: calculate minimum cost path
+    for (int i = 2; i <= n; i++) {
+        if (v[i] == 0) {
+            v[i] = 1;  // Mark as visited
+            path[j] = i; // Update the path at position j
+            
+            temp = c[k][i] + findMinPath(i, v, c, j + 1, path); // Recursively call for the next node
+            
+            if (temp < min) { // Update min cost if a lower cost is found
+                min = temp;
+                t = i; // Record the next node in path
+            }
+            
+            v[i] = 0; // Backtrack by marking as unvisited
+        }
+    }
+    
+    path[j] = t; // Finalize the chosen node for this step in the path
+    return min;
+}
